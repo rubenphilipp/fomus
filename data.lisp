@@ -18,7 +18,7 @@
 (defparameter *acc-throughout-meas* t)
 
 (declaim (type (or null string) *title* *subtitle* *composer*)
-	 (type (or null symbol) *timesig-style* *tuplet-style*))
+         (type (or null symbol) *timesig-style* *tuplet-style*))
 (defparameter *title* nil)
 (defparameter *subtitle* nil)
 (defparameter *composer* nil)
@@ -53,7 +53,7 @@
 (defparameter *default-beat* 1/4)
 
 (declaim (type (rational (0)) *default-grace-dur*))
-(defparameter *default-grace-dur* 1/4)	; dur, grace#
+(defparameter *default-grace-dur* 1/4)  ; dur, grace#
 
 ;; pitch quantizing
 (declaim (type (rational (0)) *note-precision*))
@@ -74,26 +74,26 @@
    (if (and *cm-keynumfun* *use-cm*)
        (if *cm-scale* (funcall *cm-keynumfun* note :in *cm-scale*) (funcall *cm-keynumfun* note))
        (if (symbolp note)
-	   (let* ((s (symbol-name note))
-		  (b (svref +notenum+ (- (char-int (aref s 0)) 65)))
-		  (a (case (aref s 1)
-		       ((#\+ #\S) (incf b) 2)
-		       ((#\- #\F) (decf b) 2)
-		       (otherwise 1))))
-	     (+ (* (parse-integer (subseq s a)) 12) b 12))
-	   note))
+           (let* ((s (symbol-name note))
+                  (b (svref +notenum+ (- (char-int (aref s 0)) 65)))
+                  (a (case (aref s 1)
+                       ((#\+ #\S) (incf b) 2)
+                       ((#\- #\F) (decf b) 2)
+                       (otherwise 1))))
+             (+ (* (parse-integer (subseq s a)) 12) b 12))
+           note))
    *note-precision*))
 (defun is-note (note)
   (let ((*note-precision* 1)) (realp (ignore-errors (note-to-num note)))))
 (defun parse-usernote (no)
   (let ((a (when (consp no) (rest no)))
-	(no (note-to-num (if (consp no) (first no) no))))
+        (no (note-to-num (if (consp no) (first no) no))))
     (if a
-	(cons no (mapcar (lambda (x) (if (listp x)
-					 (if (list>1p x) (cons (acc-to-num (first x) 1) (acc-to-num (second x) 1/2)) (acc-to-num (first x) 1))
-					 (acc-to-num x 1)))
-			 a))
-	no)))
+        (cons no (mapcar (lambda (x) (if (listp x)
+                                         (if (list>1p x) (cons (acc-to-num (first x) 1) (acc-to-num (second x) 1/2)) (acc-to-num (first x) 1))
+                                         (acc-to-num x 1)))
+                         a))
+        no)))
 
 (declaim (type cons +accnum+))
 (defparameter +accnum+ '(("S" . 1) ("+" . 1) ("F" . -1) ("-" . -1) ("SS" . 2) ("++" . 2) ("FF" . -2) ("--" . -2) ("N" . 0)))
@@ -159,9 +159,9 @@ Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
 
 (declaim (inline copy-perc))
 (defun copy-perc (perc &key (sym (perc-sym perc)) (staff (perc-staff perc)) (note (perc-note perc)) (voice (perc-voice perc))
-		  (autodur (perc-autodur perc)) (marks (perc-marks perc)) (midinote-im (perc-midinote-im perc)) (midinote-ex (perc-midinote-ex perc)))
+                  (autodur (perc-autodur perc)) (marks (perc-marks perc)) (midinote-im (perc-midinote-im perc)) (midinote-ex (perc-midinote-ex perc)))
   (declare (type perc perc) (type (or symbol real) sym) (type (integer 1) staff) (type (integer 1) voice) (type (or symbol integer) note)
-	   (type boolean autodur) (type list marks) (type (or null (integer 0 127) cons) midinote-im) (type (or null (integer 0 127)) midinote-ex))
+           (type boolean autodur) (type list marks) (type (or null (integer 0 127) cons) midinote-im) (type (or null (integer 0 127)) midinote-ex))
   (make-perc-aux :sym sym :staff staff :note note :voice voice :autodur autodur :marks marks :midinote-im midinote-im :midinote-ex midinote-ex))
 
 (declaim (type cons +perc-type+))
@@ -184,43 +184,43 @@ Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
   (declaim (type cons +percussion+))
   (defparameter +percussion+
     (list (make-perc :bass-drum :midinote-im '(35 36) :midinote-ex 35)
-	  (make-perc :side-stick :midinote-im 37 :midinote-ex 37)
-	  (make-perc :snare-drum :midinote-im '(38 40) :midinote-ex 38)
-	  (make-perc :hand-clap :midinote-im 39 :midinote-ex 39)
-	  (make-perc :low-floor-tom :midinote-im 41 :midinote-ex 41)
-	  (make-perc :closed-hihat :midinote-im 42 :midinote-ex 42)
-	  (make-perc :high-floor-tom :midinote-im 43 :midinote-ex 43)
-	  (make-perc :pedal-hihat :midinote-im 44 :midinote-ex 44)
-	  (make-perc :low-tom :midinote-im 45 :midinote-ex 45)
-	  (make-perc :open-hihat :midinote-im 46 :midinote-ex 46)
-	  (make-perc :low-mid-tom :midinote-im 47 :midinote-ex 47)
-	  (make-perc :high-mid-tom :midinote-im 48 :midinote-ex 48)
-	  (make-perc :crash-cymbal :midinote-im '(49 57) :midinote-ex 49)
-	  (make-perc :high-tom :midinote-im 50 :midinote-ex 50)
-	  (make-perc :ride-cymbal :midinote-im '(51 59) :midinote-ex 51)
-	  (make-perc :chinese-cymbal :midinote-im 52 :midinote-ex 52)
-	  (make-perc :ride-bell :midinote-im 53 :midinote-ex 53)
-	  (make-perc :tambourine :midinote-im 54 :midinote-ex 54)
-	  (make-perc :splash-cymbal :midinote-im 55 :midinote-ex 55)
-	  (make-perc :cowbell :midinote-im 56 :midinote-ex 56)
-	  (make-perc :vibraslap :midinote-im 58 :midinote-ex 58)
-	  (make-perc :high-bongo :midinote-im 60 :midinote-ex 60)
-	  (make-perc :low-bongo :midinote-im 61 :midinote-ex 61)
-	  (make-perc :high-conga :midinote-im '(63 62) :midinote-ex 63)
-	  (make-perc :low-conga :midinote-im 64 :midinote-ex 64)
-	  (make-perc :high-timbale :midinote-im 65 :midinote-ex 65)
-	  (make-perc :low-timbale :midinote-im 66 :midinote-ex 66)
-	  (make-perc :high-agogo :midinote-im 67 :midinote-ex 67)
-	  (make-perc :low-agogo :midinote-im 68 :midinote-ex 68)
-	  (make-perc :cabasa :midinote-im 69 :midinote-ex 69)
-	  (make-perc :maracas :midinote-im 70 :midinote-ex 70)
-	  (make-perc :whistle :midinote-im '(71 72) :midinote-ex 71)
-	  (make-perc :guiro :midinote-im '(73 74) :midinote-ex 73)
-	  (make-perc :claves :midinote-im 75 :midinote-ex 75)
-	  (make-perc :high-wood-block :midinote-im 76 :midinote-ex 76)
-	  (make-perc :low-wood-block :midinote-im 77 :midinote-ex 77)
-	  (make-perc :cuica :midinote-im '(79 78) :midinote-ex 79)
-	  (make-perc :triangle :midinote-im '(81 80) :midinote-ex 81))))
+          (make-perc :side-stick :midinote-im 37 :midinote-ex 37)
+          (make-perc :snare-drum :midinote-im '(38 40) :midinote-ex 38)
+          (make-perc :hand-clap :midinote-im 39 :midinote-ex 39)
+          (make-perc :low-floor-tom :midinote-im 41 :midinote-ex 41)
+          (make-perc :closed-hihat :midinote-im 42 :midinote-ex 42)
+          (make-perc :high-floor-tom :midinote-im 43 :midinote-ex 43)
+          (make-perc :pedal-hihat :midinote-im 44 :midinote-ex 44)
+          (make-perc :low-tom :midinote-im 45 :midinote-ex 45)
+          (make-perc :open-hihat :midinote-im 46 :midinote-ex 46)
+          (make-perc :low-mid-tom :midinote-im 47 :midinote-ex 47)
+          (make-perc :high-mid-tom :midinote-im 48 :midinote-ex 48)
+          (make-perc :crash-cymbal :midinote-im '(49 57) :midinote-ex 49)
+          (make-perc :high-tom :midinote-im 50 :midinote-ex 50)
+          (make-perc :ride-cymbal :midinote-im '(51 59) :midinote-ex 51)
+          (make-perc :chinese-cymbal :midinote-im 52 :midinote-ex 52)
+          (make-perc :ride-bell :midinote-im 53 :midinote-ex 53)
+          (make-perc :tambourine :midinote-im 54 :midinote-ex 54)
+          (make-perc :splash-cymbal :midinote-im 55 :midinote-ex 55)
+          (make-perc :cowbell :midinote-im 56 :midinote-ex 56)
+          (make-perc :vibraslap :midinote-im 58 :midinote-ex 58)
+          (make-perc :high-bongo :midinote-im 60 :midinote-ex 60)
+          (make-perc :low-bongo :midinote-im 61 :midinote-ex 61)
+          (make-perc :high-conga :midinote-im '(63 62) :midinote-ex 63)
+          (make-perc :low-conga :midinote-im 64 :midinote-ex 64)
+          (make-perc :high-timbale :midinote-im 65 :midinote-ex 65)
+          (make-perc :low-timbale :midinote-im 66 :midinote-ex 66)
+          (make-perc :high-agogo :midinote-im 67 :midinote-ex 67)
+          (make-perc :low-agogo :midinote-im 68 :midinote-ex 68)
+          (make-perc :cabasa :midinote-im 69 :midinote-ex 69)
+          (make-perc :maracas :midinote-im 70 :midinote-ex 70)
+          (make-perc :whistle :midinote-im '(71 72) :midinote-ex 71)
+          (make-perc :guiro :midinote-im '(73 74) :midinote-ex 73)
+          (make-perc :claves :midinote-im 75 :midinote-ex 75)
+          (make-perc :high-wood-block :midinote-im 76 :midinote-ex 76)
+          (make-perc :low-wood-block :midinote-im 77 :midinote-ex 77)
+          (make-perc :cuica :midinote-im '(79 78) :midinote-ex 79)
+          (make-perc :triangle :midinote-im '(81 80) :midinote-ex 81))))
 
 ;; all leglines data indicates maximum allowed before change of clef/use of ottava
 ;; leglines may be number or list of (number-default and/or (list :clef :up/down-keyword number))
@@ -252,13 +252,13 @@ Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
 
 (declaim (inline copy-instr))
 (defun copy-instr (instr &key (sym (instr-sym instr)) (clefs (instr-clefs instr)) (staves (instr-staves instr)) (minp (instr-minp instr)) (maxp (instr-maxp instr))
-		   (simultlim (instr-simultlim instr)) (tpose (instr-tpose instr)) (cleflegls (instr-cleflegls instr)) (8uplegls (instr-8uplegls instr))
-		   (8dnlegls (instr-8dnlegls instr)) (percs (instr-percs instr)) (midiprgch-im (instr-midiprgch-im instr)) (midiprgch-ex (instr-midiprgch-ex instr)))
+                   (simultlim (instr-simultlim instr)) (tpose (instr-tpose instr)) (cleflegls (instr-cleflegls instr)) (8uplegls (instr-8uplegls instr))
+                   (8dnlegls (instr-8dnlegls instr)) (percs (instr-percs instr)) (midiprgch-im (instr-midiprgch-im instr)) (midiprgch-ex (instr-midiprgch-ex instr)))
   (declare (type instr instr) (type (or symbol real) sym) (type (or symbol cons) clefs) (type (integer 1) staves) (type (or integer null) minp maxp)
-	   (type (or (integer 1) null) simultlim) (type (or null integer) tpose) (type (or (integer 1) cons) cleflegls) (type (or null (integer 1) cons) 8uplegls 8dnlegls)
-	   (type list percs) (type (or null (integer 0 127) cons) midiprgch-im) (type (or null (integer 0 127) cons) midiprgch-ex))
+           (type (or (integer 1) null) simultlim) (type (or null integer) tpose) (type (or (integer 1) cons) cleflegls) (type (or null (integer 1) cons) 8uplegls 8dnlegls)
+           (type list percs) (type (or null (integer 0 127) cons) midiprgch-im) (type (or null (integer 0 127) cons) midiprgch-ex))
   (make-instr-aux :sym sym :clefs clefs :staves staves :minp minp :maxp maxp :simultlim simultlim :tpose tpose :cleflegls cleflegls
-		  :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex))
+                  :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex))
 
 (declaim (type cons +instr-type+))
 (defparameter +instr-type+
@@ -272,21 +272,21 @@ Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
      (instr-simultlim (check* (or null (integer 1)) "Found ~S, expected NIL or (INTEGER 1) in SIMULTLIM slot" t))
      (instr-tpose (check* (or null integer) "Found ~S, expected NIL or INTEGER in TPOSE slot" t))
      (instr-cleflegls (check* (or* (integer 1)
-				   (cons-of* (integer 1)
-					     (and* (list-of* (list* (and* symbol (check* (satisfies is-clef)
-											 "Found ~S, expected valid clef symbol in list in CLEFLEGLS slot" t))
-								    (and* symbol (check* (member :up :dn) "Found ~S, expected :UP or :DN in list in CLEFLEGLS slot" t))
-								    (integer 1)))
-						   (length* <= 2))))
-			      "Found ~S, expected (INTEGERS 1) or SYMBOLS in the form I, (I (S S I) ...) in CLEFLEGLS slot" t))
+                                   (cons-of* (integer 1)
+                                             (and* (list-of* (list* (and* symbol (check* (satisfies is-clef)
+                                                                                         "Found ~S, expected valid clef symbol in list in CLEFLEGLS slot" t))
+                                                                    (and* symbol (check* (member :up :dn) "Found ~S, expected :UP or :DN in list in CLEFLEGLS slot" t))
+                                                                    (integer 1)))
+                                                   (length* <= 2))))
+                              "Found ~S, expected (INTEGERS 1) or SYMBOLS in the form I, (I (S S I) ...) in CLEFLEGLS slot" t))
      (instr-8uplegls (check* (or* null (integer 1) (list* (integer 1) (integer 1))) "Found ~S, expected NIL, (INTEGER 1) or ((INTEGER 1) (INTEGER 1)) in 8UPLEGLS slot" t))
      (instr-8dnlegls (check* (or* null (integer 1) (list* (integer 1) (integer 1))) "Found ~S, expected NIL, (INTEGER 1) or ((INTEGER 1) (INTEGER 1)) in 8DNLEGLS slot" t))
      (instr-percs (check* (or* null (list-of* (or* (type* +perc-type+) (cons* symbol (key-arg-pairs* ,@+perc-keys+)))))
-			  "Found ~S, expected list of PERC objects or (SYMBOL/(INTEGER 0 127) KEYWORD/ARGUMENT-PAIRS...) in PERCS slot" t))
+                          "Found ~S, expected list of PERC objects or (SYMBOL/(INTEGER 0 127) KEYWORD/ARGUMENT-PAIRS...) in PERCS slot" t))
      (instr-midiprgch-im (check* (or* null (integer 0 127) (list-of* (integer 0 127)))
-				 "Found ~S, expected NIL, (integer 0 127) or list of (integer 0 127) in MIDIPRGCH-IM slot" t))
+                                 "Found ~S, expected NIL, (integer 0 127) or list of (integer 0 127) in MIDIPRGCH-IM slot" t))
      (instr-midiprgch-ex (check* (or* null (integer 0 127) (cons* (integer 0 127) key-arg-pairs*))
-				 "Found ~S, expected NIL, (integer 0 127) or ((integer 0 127) KEYWORD-ARGUMENT-PAIRS...) in MIDIPRGCH-EX slot" t)))))
+                                 "Found ~S, expected NIL, (integer 0 127) or ((integer 0 127) KEYWORD-ARGUMENT-PAIRS...) in MIDIPRGCH-EX slot" t)))))
 
 ;; tpose = mod. for sounding pitch
 ;; 8up/8down = (threshold-for-ottava-brackets . threshold-for-back-to-normal)
@@ -311,114 +311,114 @@ Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
   (declaim (type cons +instruments+))
   (defparameter +instruments+
     (list (make-instr :piccolo :clefs :treble :tpose 12 :minp 74 :maxp 108 :midiprgch-im 72 :midiprgch-ex 72)
-	  (make-instr :flute :clefs :treble :minp 60 :maxp 96 :midiprgch-im 73 :midiprgch-ex 73)
-	  (make-instr :alto-flute :clefs :treble :tpose -5 :minp 55 :maxp 86 :midiprgch-ex 73)
-	  (make-instr :bass-flute :clefs :treble :tpose -12 :minp 48 :maxp 79 :midiprgch-ex 73)
-	  
-	  (make-instr :oboe :clefs :treble :minp 58 :maxp 91 :midiprgch-im 68 :midiprgch-ex 68)
-	  (make-instr :oboe-damore :clefs :treble :tpose -3 :minp 56 :maxp 86 :midiprgch-ex 86)
-	  (make-instr :english-horn :clefs :treble :tpose -7 :minp 52 :maxp 82 :midiprgch-im 69 :midiprgch-ex 69)
-	  (make-instr :baritone-oboe :clefs :treble :tpose -12 :minp 47 :maxp 77 :midiprgch-ex 69)
-	  (make-instr :heckelphone :clefs :treble :tpose -12 :minp 45 :maxp 77 :midiprgch-ex 69)
-	  
-	  (make-instr :ef-clarinet :clefs :treble :tpose 3 :minp 55 :maxp 94 :midiprgch-ex 71)
-	  (make-instr :d-clarinet :clefs :treble :tpose 2 :minp 54 :maxp 93 :midiprgch-ex 71)
-	  (make-instr :bf-clarinet :clefs :treble :tpose -2 :minp 50 :maxp 91 :midiprgch-im 71 :midiprgch-ex 71)
-	  (make-instr :a-clarinet :clefs :treble :tpose -3 :minp 49 :maxp 90 :midiprgch-ex 71)
-	  (make-instr :alto-clarinet :clefs :treble :tpose -9 :minp 43 :maxp 77 :midiprgch-ex 71)
-	  (make-instr :basset-horn :clefs :treble :tpose -7 :minp 41 :maxp 84 :midiprgch-ex 71)
-	  (make-instr :bass-clarinet :clefs :treble :tpose -14 :minp 37 :maxp 72 :midiprgch-ex 71) 
-	  (make-instr :contra-alto-clarinet :clefs :treble :tpose -21 :minp 30 :maxp 65 :midiprgch-ex 71)
-	  (make-instr :contrabass-clarinet :clefs :treble :tpose -26 :minp 22 :maxp 60 :midiprgch-ex 71)
-	  
-	  (make-instr :bassoon :clefs '(:bass :tenor) :minp 34 :maxp 72 :midiprgch-im 70 :midiprgch-ex 70)
-	  (make-instr :contrabassoon :clefs '(:bass :tenor) :tpose -12 :minp 22 :maxp 57 :midiprgch-ex 70)
-	  
-	  (make-instr :sopranino-saxophone :clefs :treble :tpose 3 :minp 61 :maxp 90 :midiprgch-ex 64)
-	  (make-instr :soprano-saxophone :clefs :treble :tpose -2 :minp 56 :maxp 85 :midiprgch-im 64 :midiprgch-ex 64)
-	  (make-instr :alto-saxophone :clefs :treble :tpose -9 :minp 49 :maxp 80 :midiprgch-im 65 :midiprgch-ex 65)
-	  (make-instr :tenor-saxophone :clefs :treble :tpose -14 :minp 44 :maxp 75 :midiprgch-im 66 :midiprgch-ex 66)
-	  (make-instr :baritone-saxophone :clefs :treble :tpose -21 :minp 37 :maxp 68 :midiprgch-im 67 :midiprgch-ex 67)
-	  (make-instr :bass-saxophone :clefs :treble :tpose -26 :minp 32 :maxp 63 :midiprgch-ex 67)
-	  (make-instr :contrabass-saxophone :clefs :treble :tpose -33 :minp 25 :maxp 56 :midiprgch-ex 67)
-	  
-	  (make-instr :f-alto-horn :clefs :treble :tpose -7 :minp 38 :maxp 68 :midiprgch-ex 60)
-	  (make-instr :ef-alto-horn :clefs :treble :tpose -9 :minp 36 :maxp 66 :midiprgch-ex 60)
-	  (make-instr :horn :clefs '(:treble :bass) :tpose -7 :minp 35 :maxp 77 :midiprgch-im 60)
-	  (make-instr :bf-wagner-tuba :clefs '(:bass :treble) :tpose -2 :minp 40 :maxp 77 :midiprgch-ex 60)
-	  (make-instr :f-wagner-tuba :clefs '(:bass :treble) :tpose -7 :minp 35 :maxp 77 :midiprgch-ex 60)
-	  
-	  (make-instr :ef-cornet :clefs :treble :tpose 3 :minp 57 :maxp 87 :midiprgch-ex 56)
-	  (make-instr :bf-cornet :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-ex 56)
-	  (make-instr :bf-piccolo-trumpet :clefs :treble :tpose 10 :minp 59 :maxp 89 :midiprgch-ex 56)
-	  (make-instr :a-piccolo-trumpet :clefs :treble :tpose 9 :minp 58 :maxp 88 :midiprgch-ex 56)
-	  (make-instr :ef-trumpet :clefs :treble :tpose 3 :minp 57 :maxp 87 :midiprgch-ex 56)
-	  (make-instr :d-trumpet :clefs :treble :tpose 2 :minp 56 :maxp 86 :midiprgch-ex 56)
-	  (make-instr :c-trumpet :clefs :treble :minp 52 :maxp 84 :midiprgch-ex 56)
-	  (make-instr :bf-trumpet :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-im '(56 59) :midiprgch-ex 56)
-	  (make-instr :flugelhorn :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-ex 56)
-	  (make-instr :ef-bass-trumpet :clefs :treble :tpose -26 :minp 33 :maxp 63 :midiprgch-ex 56)
-	  (make-instr :bf-bass-trumpet :clefs :treble :tpose -26 :minp 28 :maxp 58 :midiprgch-ex 56)
-	  
-	  (make-instr :alto-trombone :clefs :alto :minp 45 :maxp 77 :midiprgch-ex 57)
-	  (make-instr :tenor-trombone :clefs '(:bass :tenor) :minp 40 :maxp 72 :midiprgch-im 57 :midiprgch-ex 57)
-	  (make-instr :bass-trombone :clefs '(:bass :tenor) :minp 36 :maxp 71 :midiprgch-ex 57)
-	  (make-instr :contrabass-trombone :clefs :bass :minp 28 :maxp 58 :midiprgch-ex 57)
+          (make-instr :flute :clefs :treble :minp 60 :maxp 96 :midiprgch-im 73 :midiprgch-ex 73)
+          (make-instr :alto-flute :clefs :treble :tpose -5 :minp 55 :maxp 86 :midiprgch-ex 73)
+          (make-instr :bass-flute :clefs :treble :tpose -12 :minp 48 :maxp 79 :midiprgch-ex 73)
+          
+          (make-instr :oboe :clefs :treble :minp 58 :maxp 91 :midiprgch-im 68 :midiprgch-ex 68)
+          (make-instr :oboe-damore :clefs :treble :tpose -3 :minp 56 :maxp 86 :midiprgch-ex 86)
+          (make-instr :english-horn :clefs :treble :tpose -7 :minp 52 :maxp 82 :midiprgch-im 69 :midiprgch-ex 69)
+          (make-instr :baritone-oboe :clefs :treble :tpose -12 :minp 47 :maxp 77 :midiprgch-ex 69)
+          (make-instr :heckelphone :clefs :treble :tpose -12 :minp 45 :maxp 77 :midiprgch-ex 69)
+          
+          (make-instr :ef-clarinet :clefs :treble :tpose 3 :minp 55 :maxp 94 :midiprgch-ex 71)
+          (make-instr :d-clarinet :clefs :treble :tpose 2 :minp 54 :maxp 93 :midiprgch-ex 71)
+          (make-instr :bf-clarinet :clefs :treble :tpose -2 :minp 50 :maxp 91 :midiprgch-im 71 :midiprgch-ex 71)
+          (make-instr :a-clarinet :clefs :treble :tpose -3 :minp 49 :maxp 90 :midiprgch-ex 71)
+          (make-instr :alto-clarinet :clefs :treble :tpose -9 :minp 43 :maxp 77 :midiprgch-ex 71)
+          (make-instr :basset-horn :clefs :treble :tpose -7 :minp 41 :maxp 84 :midiprgch-ex 71)
+          (make-instr :bass-clarinet :clefs :treble :tpose -14 :minp 37 :maxp 72 :midiprgch-ex 71) 
+          (make-instr :contra-alto-clarinet :clefs :treble :tpose -21 :minp 30 :maxp 65 :midiprgch-ex 71)
+          (make-instr :contrabass-clarinet :clefs :treble :tpose -26 :minp 22 :maxp 60 :midiprgch-ex 71)
+          
+          (make-instr :bassoon :clefs '(:bass :tenor) :minp 34 :maxp 72 :midiprgch-im 70 :midiprgch-ex 70)
+          (make-instr :contrabassoon :clefs '(:bass :tenor) :tpose -12 :minp 22 :maxp 57 :midiprgch-ex 70)
+          
+          (make-instr :sopranino-saxophone :clefs :treble :tpose 3 :minp 61 :maxp 90 :midiprgch-ex 64)
+          (make-instr :soprano-saxophone :clefs :treble :tpose -2 :minp 56 :maxp 85 :midiprgch-im 64 :midiprgch-ex 64)
+          (make-instr :alto-saxophone :clefs :treble :tpose -9 :minp 49 :maxp 80 :midiprgch-im 65 :midiprgch-ex 65)
+          (make-instr :tenor-saxophone :clefs :treble :tpose -14 :minp 44 :maxp 75 :midiprgch-im 66 :midiprgch-ex 66)
+          (make-instr :baritone-saxophone :clefs :treble :tpose -21 :minp 37 :maxp 68 :midiprgch-im 67 :midiprgch-ex 67)
+          (make-instr :bass-saxophone :clefs :treble :tpose -26 :minp 32 :maxp 63 :midiprgch-ex 67)
+          (make-instr :contrabass-saxophone :clefs :treble :tpose -33 :minp 25 :maxp 56 :midiprgch-ex 67)
+          
+          (make-instr :f-alto-horn :clefs :treble :tpose -7 :minp 38 :maxp 68 :midiprgch-ex 60)
+          (make-instr :ef-alto-horn :clefs :treble :tpose -9 :minp 36 :maxp 66 :midiprgch-ex 60)
+          (make-instr :horn :clefs '(:treble :bass) :tpose -7 :minp 35 :maxp 77 :midiprgch-im 60)
+          (make-instr :bf-wagner-tuba :clefs '(:bass :treble) :tpose -2 :minp 40 :maxp 77 :midiprgch-ex 60)
+          (make-instr :f-wagner-tuba :clefs '(:bass :treble) :tpose -7 :minp 35 :maxp 77 :midiprgch-ex 60)
+          
+          (make-instr :ef-cornet :clefs :treble :tpose 3 :minp 57 :maxp 87 :midiprgch-ex 56)
+          (make-instr :bf-cornet :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-ex 56)
+          (make-instr :bf-piccolo-trumpet :clefs :treble :tpose 10 :minp 59 :maxp 89 :midiprgch-ex 56)
+          (make-instr :a-piccolo-trumpet :clefs :treble :tpose 9 :minp 58 :maxp 88 :midiprgch-ex 56)
+          (make-instr :ef-trumpet :clefs :treble :tpose 3 :minp 57 :maxp 87 :midiprgch-ex 56)
+          (make-instr :d-trumpet :clefs :treble :tpose 2 :minp 56 :maxp 86 :midiprgch-ex 56)
+          (make-instr :c-trumpet :clefs :treble :minp 52 :maxp 84 :midiprgch-ex 56)
+          (make-instr :bf-trumpet :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-im '(56 59) :midiprgch-ex 56)
+          (make-instr :flugelhorn :clefs :treble :tpose -2 :minp 52 :maxp 82 :midiprgch-ex 56)
+          (make-instr :ef-bass-trumpet :clefs :treble :tpose -26 :minp 33 :maxp 63 :midiprgch-ex 56)
+          (make-instr :bf-bass-trumpet :clefs :treble :tpose -26 :minp 28 :maxp 58 :midiprgch-ex 56)
+          
+          (make-instr :alto-trombone :clefs :alto :minp 45 :maxp 77 :midiprgch-ex 57)
+          (make-instr :tenor-trombone :clefs '(:bass :tenor) :minp 40 :maxp 72 :midiprgch-im 57 :midiprgch-ex 57)
+          (make-instr :bass-trombone :clefs '(:bass :tenor) :minp 36 :maxp 71 :midiprgch-ex 57)
+          (make-instr :contrabass-trombone :clefs :bass :minp 28 :maxp 58 :midiprgch-ex 57)
 
-	  (make-instr :baritone :clefs :bass :minp 40 :maxp 70 :midiprgch-ex 58)
-	  (make-instr :euphonium :clefs :bass :minp 40 :maxp 70 :midiprgch-ex 58)
-	  (make-instr :tuba :clefs :bass :minp 26 :maxp 67 :midiprgch-im 58 :midiprgch-ex 58)
+          (make-instr :baritone :clefs :bass :minp 40 :maxp 70 :midiprgch-ex 58)
+          (make-instr :euphonium :clefs :bass :minp 40 :maxp 70 :midiprgch-ex 58)
+          (make-instr :tuba :clefs :bass :minp 26 :maxp 67 :midiprgch-im 58 :midiprgch-ex 58)
 
-	  (make-instr :timpani :clefs :bass :minp 38 :maxp 60 :midiprgch-im 47 :midiprgch-ex 47)
-	  (make-instr :percussion :clefs :percussion)
-	  (make-instr :glockenspiel :clefs :treble :tpose 24 :simultlim 2 :minp 79 :maxp 108 :midiprgch-im 9 :midiprgch-ex 9)
-	  (make-instr :xylophone :clefs '(:treble) :simultlim 2 :tpose 12 :8uplegls '(5 2) :minp 69 :maxp 108 :midiprgch-im 13 :midiprgch-ex 13)
-	  (make-instr :vibraphone :clefs :treble :simultlim 2 :minp 53 :maxp 89 :midiprgch-im 11 :midiprgch-ex 11)
-	  (make-instr :marimba :clefs '(:treble :bass) :simultlim 2 :8uplegls '(5 2) :minp 45 :maxp 96 :midiprgch-im 12 :midiprgch-ex 12)
-	  (make-instr :chimes :clefs :treble :minp 60 :maxp 77 :midiprgch-im 14 :midiprgch-ex 14)
-	  (make-instr :celesta :clefs '(:treble :bass) :simultlim 5 :tpose 12 :simultlim 5 :8uplegls '(5 2) :minp 60 :maxp 112
-		      :midiprgch-im 8 :midiprgch-ex 8)
+          (make-instr :timpani :clefs :bass :minp 38 :maxp 60 :midiprgch-im 47 :midiprgch-ex 47)
+          (make-instr :percussion :clefs :percussion)
+          (make-instr :glockenspiel :clefs :treble :tpose 24 :simultlim 2 :minp 79 :maxp 108 :midiprgch-im 9 :midiprgch-ex 9)
+          (make-instr :xylophone :clefs '(:treble) :simultlim 2 :tpose 12 :8uplegls '(5 2) :minp 69 :maxp 108 :midiprgch-im 13 :midiprgch-ex 13)
+          (make-instr :vibraphone :clefs :treble :simultlim 2 :minp 53 :maxp 89 :midiprgch-im 11 :midiprgch-ex 11)
+          (make-instr :marimba :clefs '(:treble :bass) :simultlim 2 :8uplegls '(5 2) :minp 45 :maxp 96 :midiprgch-im 12 :midiprgch-ex 12)
+          (make-instr :chimes :clefs :treble :minp 60 :maxp 77 :midiprgch-im 14 :midiprgch-ex 14)
+          (make-instr :celesta :clefs '(:treble :bass) :simultlim 5 :tpose 12 :simultlim 5 :8uplegls '(5 2) :minp 60 :maxp 112
+                      :midiprgch-im 8 :midiprgch-ex 8)
           (make-instr :pat-waing :clefs :jianpu :minp 36 :maxp 108 :simultlim 2 :midiprgch-ex 0)
           (make-instr :pat-waing2 :clefs :jianpu2 :minp 36 :maxp 108 :simultlim 2 :midiprgch-ex 0)
-	  
-	  (make-instr :troubadour-harp :clefs '(:treble :bass) :staves 2 :simultlim 5 :minp 36 :maxp 92 :midiprgch-ex 46)
-	  (make-instr :harp :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 20 :maxp 104 :midiprgch-im 46 :midiprgch-ex 46)
-	  (make-instr :piano :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 21 :maxp 108
-		      :midiprgch-im '(0 1 2 3) :midiprgch-ex 0)
-	  (make-instr :piano4st :clefs '(:treble-15up :treble :bass :bass-8dn) :staves 4 :simultlim 5 :8uplegls '(5 5 2 2) :8dnlegls '(5 5 2 2) :minp 21 :maxp 108
-		      :midiprgch-im '(0 1 2 3) :midiprgch-ex 0)
-	  (make-instr :electric-piano :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 21 :maxp 108
-		      :midiprgch-im '(4 5 7 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95) :midiprgch-ex 4)
-	  (make-instr :harpsichord :clefs '(:treble :bass) :staves 2 :minp 29 :maxp 89 :midiprgch-im 6 :midiprgch-ex 6)
-	  (make-instr :harmonium :clefs '(:bass :treble) :staves 2 :simultlim 5 :minp 29 :maxp 89 :midiprgch-im '(16 17 18 20) :midiprgch-ex 16)
-	  (make-instr :organ-manuals :clefs '(:treble :bass) :8uplegls '(5 2) :staves 2 :minp 36 :maxp 96 :midiprgch-im 19 :midiprgch-ex 19)
-	  (make-instr :organ-pedals :clefs :bass :minp 36 :maxp 67 :midiprgch-ex 19)
+          
+          (make-instr :troubadour-harp :clefs '(:treble :bass) :staves 2 :simultlim 5 :minp 36 :maxp 92 :midiprgch-ex 46)
+          (make-instr :harp :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 20 :maxp 104 :midiprgch-im 46 :midiprgch-ex 46)
+          (make-instr :piano :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 21 :maxp 108
+                      :midiprgch-im '(0 1 2 3) :midiprgch-ex 0)
+          (make-instr :piano4st :clefs '(:treble-15up :treble :bass :bass-8dn) :staves 4 :simultlim 5 :8uplegls '(5 5 2 2) :8dnlegls '(5 5 2 2) :minp 21 :maxp 108
+                      :midiprgch-im '(0 1 2 3) :midiprgch-ex 0)
+          (make-instr :electric-piano :clefs '(:treble :bass) :staves 2 :simultlim 5 :8uplegls '(5 2) :8dnlegls '(5 2) :minp 21 :maxp 108
+                      :midiprgch-im '(4 5 7 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95) :midiprgch-ex 4)
+          (make-instr :harpsichord :clefs '(:treble :bass) :staves 2 :minp 29 :maxp 89 :midiprgch-im 6 :midiprgch-ex 6)
+          (make-instr :harmonium :clefs '(:bass :treble) :staves 2 :simultlim 5 :minp 29 :maxp 89 :midiprgch-im '(16 17 18 20) :midiprgch-ex 16)
+          (make-instr :organ-manuals :clefs '(:treble :bass) :8uplegls '(5 2) :staves 2 :minp 36 :maxp 96 :midiprgch-im 19 :midiprgch-ex 19)
+          (make-instr :organ-pedals :clefs :bass :minp 36 :maxp 67 :midiprgch-ex 19)
 
-	  (make-instr :accordion :clefs :treble :minp 41 :maxp 105 :midiprgch-im '(21 23) :midiprgch-ex 21)
-	  (make-instr :harmonica :clefs '(:bass :treble) :minp 28 :maxp 103 :midiprgch-im 22 :midiprgch-ex 22)
-	  (make-instr :ukulele :clefs :treble :minp 60 :maxp 81 :midiprgch-ex 24)
-	  (make-instr :mandolin :clefs :treble :minp 55 :maxp 85 :midiprgch-ex 24)
-	  (make-instr :guitar :clefs :treble-8dn :tpose 0 :minp 40 :maxp 83 :midiprgch-im '(24 25 26 27 28 29 30 31) :midiprgch-ex 24)
+          (make-instr :accordion :clefs :treble :minp 41 :maxp 105 :midiprgch-im '(21 23) :midiprgch-ex 21)
+          (make-instr :harmonica :clefs '(:bass :treble) :minp 28 :maxp 103 :midiprgch-im 22 :midiprgch-ex 22)
+          (make-instr :ukulele :clefs :treble :minp 60 :maxp 81 :midiprgch-ex 24)
+          (make-instr :mandolin :clefs :treble :minp 55 :maxp 85 :midiprgch-ex 24)
+          (make-instr :guitar :clefs :treble-8dn :tpose 0 :minp 40 :maxp 83 :midiprgch-im '(24 25 26 27 28 29 30 31) :midiprgch-ex 24)
           (make-instr :guitar-tab :clefs :tab :tpose 0 :minp 40 :maxp 83 :midiprgch-im '(24 25 26 27 28 29 30 31) :midiprgch-ex 24)
-	  (make-instr :bass-guitar :clefs :bass :tpose -12 :minp 28 :maxp 60 :midiprgch-im '(32 33 34 35 36 37 38 39) :midiprgch-ex 32)
+          (make-instr :bass-guitar :clefs :bass :tpose -12 :minp 28 :maxp 60 :midiprgch-im '(32 33 34 35 36 37 38 39) :midiprgch-ex 32)
 
-	  (make-instr :soprano :clefs :treble :minp 56 :maxp 87 :midiprgch-ex 52)
-	  (make-instr :mezzo-soprano :clefs :treble :minp 55 :maxp 82 :midiprgch-ex 52)
-	  (make-instr :contralto :clefs :treble :minp 53 :maxp 78 :midiprgch-ex 52)
-	  (make-instr :tenor :clefs :treble :minp 55 :maxp 78 :midiprgch-ex 53)
-	  (make-instr :tenor-8dn :clefs :treble-8dn :minp 60 :maxp 84 :midiprgch-ex 53)
-	  (make-instr :baritone :clefs :bass :minp 42 :maxp 67 :midiprgch-ex 53)
-	  (make-instr :bass :clefs :bass :minp 34 :maxp 65 :midiprgch-ex 53)
-	  
-	  (make-instr :soprano-choir :clefs :treble :minp 60 :maxp 81 :midiprgch-ex 52)
-	  (make-instr :alto-choir :clefs :treble :minp 54 :maxp 77 :midiprgch-ex 52)
-	  (make-instr :tenor-choir :clefs :treble-8dn :minp 48 :maxp 69 :midiprgch-ex 53)
-	  (make-instr :bass-choir :clefs :bass :minp 40 :maxp 62 :midiprgch-ex 53)
-	  
-	  (make-instr :violin :clefs :treble :8uplegls '(5 2) :minp 55 :maxp 103 :midiprgch-im '(40 110) :midiprgch-ex '(40 :pizz 45))
-	  (make-instr :viola :clefs '(:treble :alto) :8uplegls '(5 2) :minp 48 :maxp 93 :midiprgch-im 41 :midiprgch-ex '(41 :pizz 45))
-	  (make-instr :cello :clefs '(:bass :tenor :treble) :minp 36 :maxp 84 :midiprgch-im 42 :midiprgch-ex '(42 :pizz 45))
-	  (make-instr :contrabass :clefs '(:bass :tenor) :tpose -12 :minp 28 :maxp 67 :midiprgch-im 43 :midiprgch-ex '(43 :pizz 45)))))
+          (make-instr :soprano :clefs :treble :minp 56 :maxp 87 :midiprgch-ex 52)
+          (make-instr :mezzo-soprano :clefs :treble :minp 55 :maxp 82 :midiprgch-ex 52)
+          (make-instr :contralto :clefs :treble :minp 53 :maxp 78 :midiprgch-ex 52)
+          (make-instr :tenor :clefs :treble :minp 55 :maxp 78 :midiprgch-ex 53)
+          (make-instr :tenor-8dn :clefs :treble-8dn :minp 60 :maxp 84 :midiprgch-ex 53)
+          (make-instr :baritone :clefs :bass :minp 42 :maxp 67 :midiprgch-ex 53)
+          (make-instr :bass :clefs :bass :minp 34 :maxp 65 :midiprgch-ex 53)
+          
+          (make-instr :soprano-choir :clefs :treble :minp 60 :maxp 81 :midiprgch-ex 52)
+          (make-instr :alto-choir :clefs :treble :minp 54 :maxp 77 :midiprgch-ex 52)
+          (make-instr :tenor-choir :clefs :treble-8dn :minp 48 :maxp 69 :midiprgch-ex 53)
+          (make-instr :bass-choir :clefs :bass :minp 40 :maxp 62 :midiprgch-ex 53)
+          
+          (make-instr :violin :clefs :treble :8uplegls '(5 2) :minp 55 :maxp 103 :midiprgch-im '(40 110) :midiprgch-ex '(40 :pizz 45))
+          (make-instr :viola :clefs '(:treble :alto) :8uplegls '(5 2) :minp 48 :maxp 93 :midiprgch-im 41 :midiprgch-ex '(41 :pizz 45))
+          (make-instr :cello :clefs '(:bass :tenor :treble) :minp 36 :maxp 84 :midiprgch-im 42 :midiprgch-ex '(42 :pizz 45))
+          (make-instr :contrabass :clefs '(:bass :tenor) :tpose -12 :minp 28 :maxp 67 :midiprgch-im 43 :midiprgch-ex '(43 :pizz 45)))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (declaim (inline is-instr))
@@ -439,40 +439,40 @@ instrument)"
 (defparameter *instr-groups* nil)
 (defparameter +instr-groups+
   (list '(:orchestra
-	  (:group
-	   (:group :piccolo :flute :alto-flute :bass-flute)
-	   (:group :oboe :oboe-damore :english-horn :baritone-oboe :heckelphone)
-	   (:group :ef-clarinet :d-clarinet :bf-clarinet :a-clarinet :alto-clarinet :basset-horn :bass-clarinet :contra-alto-clarinet :contrabass-clarinet)
-	   (:group :sopranino-saxophone :soprano-saxophone :alto-saxophone :tenor-saxophone :baritone-saxophone :bass-saxophone :contrabass-saxophone)
-	   (:group :bassoon :contra-bassoon))
-	  (:group
-	   (:group :f-alto-horn :ef-alto-horn :horn :bf-wagner-tuba :f-wagner-tuba)
-	   (:group :ef-cornet :bf-cornet :bf-piccolo-trumpet :a-piccolo-trumpet :ef-trumpet :d-trumpet :c-trumpet :bf-trumpet
-	    :flugelhorn :ef-bass-trumpet :bf-bass-trumpet)
-	   (:group :alto-trombone :tenor-trombone :bass-trombone :contrabass-trombone)
-	   (:group :baritone :euphonium :tuba))
-	  :timpani :percussion 
+          (:group
+           (:group :piccolo :flute :alto-flute :bass-flute)
+           (:group :oboe :oboe-damore :english-horn :baritone-oboe :heckelphone)
+           (:group :ef-clarinet :d-clarinet :bf-clarinet :a-clarinet :alto-clarinet :basset-horn :bass-clarinet :contra-alto-clarinet :contrabass-clarinet)
+           (:group :sopranino-saxophone :soprano-saxophone :alto-saxophone :tenor-saxophone :baritone-saxophone :bass-saxophone :contrabass-saxophone)
+           (:group :bassoon :contra-bassoon))
+          (:group
+           (:group :f-alto-horn :ef-alto-horn :horn :bf-wagner-tuba :f-wagner-tuba)
+           (:group :ef-cornet :bf-cornet :bf-piccolo-trumpet :a-piccolo-trumpet :ef-trumpet :d-trumpet :c-trumpet :bf-trumpet
+            :flugelhorn :ef-bass-trumpet :bf-bass-trumpet)
+           (:group :alto-trombone :tenor-trombone :bass-trombone :contrabass-trombone)
+           (:group :baritone :euphonium :tuba))
+          :timpani :percussion 
           :pat-waing
-	  :glockenspiel :xylophone :vibraphone :marimba :chimes :celesta
-	  (:grandstaff :troubadour-harp) (:grandstaff :harp) (:grandstaff :piano) (:grandstaff :electric-piano) (:grandstaff :harpsichord)
-	  (:grandstaff :harmonium) (:group (:grandstaff :organ-manuals) :organ-pedals)
-	  :accordion :harmonica :ukulele :mandolin :guitar :bass-guitar
-	  :soprano :mezzo-soprano :contralto :tenor :tenor-8dn :baritone :bass
-	  (:group :soprano-choir :alto-choir :tenor-choir :bass-choir)
-	  (:group (:group :violin) (:group :viola) (:group :cello) (:group :contrabass)))
+          :glockenspiel :xylophone :vibraphone :marimba :chimes :celesta
+          (:grandstaff :troubadour-harp) (:grandstaff :harp) (:grandstaff :piano) (:grandstaff :electric-piano) (:grandstaff :harpsichord)
+          (:grandstaff :harmonium) (:group (:grandstaff :organ-manuals) :organ-pedals)
+          :accordion :harmonica :ukulele :mandolin :guitar :bass-guitar
+          :soprano :mezzo-soprano :contralto :tenor :tenor-8dn :baritone :bass
+          (:group :soprano-choir :alto-choir :tenor-choir :bass-choir)
+          (:group (:group :violin) (:group :viola) (:group :cello) (:group :contrabass)))
 
-	(cons :small-ensemble
-	      (loop for e in +instruments+
-		    for sy = (instr-sym e)
-		    if (or (eq sy :percussion) (find sy '(:timpani :glockenspiel :xylophone :vibraphone :marimba :chimes :celesta))) collect (list :group sy) into p
-		    else if (eq sy :organ-manuals) collect '(:group (:grandstaff :organ-manuals) :organ-pedals) into k
-		    else if (eq sy :organ-pedals) do (progn nil)
-		    else if (= (instr-staves e) 2) collect (list :grandstaff sy) into k
-		    else if (find sy '(:soprano :mezzo-soprano :contralto :tenor :tenor-8dn :baritone :bass)) collect sy into v
-		    else if (find sy '(:soprano-choir :alto-choir :tenor-choir :bass-choir)) collect sy into c
-		    else collect (cons (list :group sy) (instr-minp e)) into i
-		    finally (return (nconc (mapcar #'car (sort i #'> :key #'cdr)) p
-					   (list (cons :choirgroup v)) (list (cons :choirgroup c)) k))))))
+        (cons :small-ensemble
+              (loop for e in +instruments+
+                    for sy = (instr-sym e)
+                    if (or (eq sy :percussion) (find sy '(:timpani :glockenspiel :xylophone :vibraphone :marimba :chimes :celesta))) collect (list :group sy) into p
+                    else if (eq sy :organ-manuals) collect '(:group (:grandstaff :organ-manuals) :organ-pedals) into k
+                    else if (eq sy :organ-pedals) do (progn nil)
+                    else if (= (instr-staves e) 2) collect (list :grandstaff sy) into k
+                    else if (find sy '(:soprano :mezzo-soprano :contralto :tenor :tenor-8dn :baritone :bass)) collect sy into v
+                    else if (find sy '(:soprano-choir :alto-choir :tenor-choir :bass-choir)) collect sy into c
+                    else collect (cons (list :group sy) (instr-minp e)) into i
+                    finally (return (nconc (mapcar #'car (sort i #'> :key #'cdr)) p
+                                           (list (cons :choirgroup v)) (list (cons :choirgroup c)) k))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DEFAULT DIVISIONS
@@ -527,27 +527,31 @@ instrument)"
      (check*
       (or*
        (let* ((x (unique* sy (member :barline))))
-	 (list* x (member :single :double :final :repeatleft :repeatright :repeatleftright :invisible)))
+         (list* x (member :single :double :final :repeatleft :repeatright :repeatleftright :invisible)))
+       ;;; new mode feature (esp. for unmetered sections)
+       ;;; RP  Tue Apr 30 10:28:44 2024
+       (let* ((x (unique* sy (member :mode))))
+         (list* x (member :unmetered :metered)))
        (let* ((x (unique* sy (member :keysig))))
-	 (cons* x (or* (list* (member :cmaj :amin
-				      :gmaj :emin
-				      :dmaj :bmin
-				      :amaj :f+min :fsmin
-				      :emaj :c+min :csmin
-				      :bmaj :g+min :gsmin :c-maj :cfmaj :a-min :afmin
-				      :f+maj :fsmaj :d+min :dsmin :g-maj :gfmaj :e-min :efmin
-				      :c+maj :csmaj :a+min :asmin :d-maj :dfmaj :b-min :bfmin
-				      :a-maj :afmaj :fmin
-				      :e-maj :efmaj :cmin
-				      :b-maj :bfmaj :gmin
-				      :fmaj :dmin))
-		       null
-		       (with-unique* (k)
-			 (list-of* (or* (unique* k :c (member :c+ :cs :d- :df))
-					(unique* k :d (member :d+ :ds :e- :ef))
-					(unique* k :f (member :f+ :fs :g- :gf))
-					(unique* k :g (member :g+ :gs :a- :af))
-					(unique* k :a (member :a+ :as :b- :bf)))))))))
+         (cons* x (or* (list* (member :cmaj :amin
+                                      :gmaj :emin
+                                      :dmaj :bmin
+                                      :amaj :f+min :fsmin
+                                      :emaj :c+min :csmin
+                                      :bmaj :g+min :gsmin :c-maj :cfmaj :a-min :afmin
+                                      :f+maj :fsmaj :d+min :dsmin :g-maj :gfmaj :e-min :efmin
+                                      :c+maj :csmaj :a+min :asmin :d-maj :dfmaj :b-min :bfmin
+                                      :a-maj :afmaj :fmin
+                                      :e-maj :efmaj :cmin
+                                      :b-maj :bfmaj :gmin
+                                      :fmaj :dmin))
+                       null
+                       (with-unique* (k)
+                         (list-of* (or* (unique* k :c (member :c+ :cs :d- :df))
+                                        (unique* k :d (member :d+ :ds :e- :ef))
+                                        (unique* k :f (member :f+ :fs :g- :gf))
+                                        (unique* k :g (member :g+ :gs :a- :af))
+                                        (unique* k :a (member :a+ :as :b- :bf)))))))))
       "Found ~S, expected valid property" t))))
 (defparameter +part-props+
   `(with-unique* (sy)
@@ -555,9 +559,9 @@ instrument)"
      (check*
       (or*
        (let* ((x (unique* sy (member :distr))))
-	 (cons* x (list-of* (cons* (or symbol real) (list-of* (or* (integer 1) (list* (integer 1) (integer 1)))))))))
+         (cons* x (list-of* (cons* (or symbol real) (list-of* (or* (integer 1) (list* (integer 1) (integer 1)))))))))
       "Found ~S, expected valid property" t))))
-	   
+           
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SETTINGS
 
@@ -671,36 +675,36 @@ instrument)"
     (let* ((x (member :ignore)))
       (or* x (list* x)))
     (let* ((x (unique* sy (member :arco :pizz
-				  :start8down- :8down- :end8down- :8down :start8up- :8up- :end8up- :8up
-				  :startwedge> :startwedge< :wedge< :wedge> :endwedge< :endwedge>
-				  :startwedge>* :startwedge<* :wedge<* :wedge>* :endwedge<* :endwedge>*
-				  :startgraceslur- :graceslur- :endgraceslur-
-				  :clef- :endclef- :staff :endstaff-
-				  :cautacc :autodur :forceacc
-				  :rfz :sfz :spp :sp :sff :sf :fp :ffffff :fffff :ffff :fff :ff :f :mf :mp :p :pp :ppp :pppp :ppppp :pppppp
-				  :rfz* :sfz* :spp* :sp* :sff* :sf* :fp* :ffffff* :fffff* :ffff* :fff* :ff* :f* :mf* :mp* :p* :pp* :ppp* :pppp* :ppppp* :pppppp*))))
-      (or* x (list* x)))	 ; spanners w/ only 1 level, non-articulations 
+                                  :start8down- :8down- :end8down- :8down :start8up- :8up- :end8up- :8up
+                                  :startwedge> :startwedge< :wedge< :wedge> :endwedge< :endwedge>
+                                  :startwedge>* :startwedge<* :wedge<* :wedge>* :endwedge<* :endwedge>*
+                                  :startgraceslur- :graceslur- :endgraceslur-
+                                  :clef- :endclef- :staff :endstaff-
+                                  :cautacc :autodur :forceacc
+                                  :rfz :sfz :spp :sp :sff :sf :fp :ffffff :fffff :ffff :fff :ff :f :mf :mp :p :pp :ppp :pppp :ppppp :pppppp
+                                  :rfz* :sfz* :spp* :sp* :sff* :sf* :fp* :ffffff* :fffff* :ffff* :fff* :ff* :f* :mf* :mp* :p* :pp* :ppp* :pppp* :ppppp* :pppppp*))))
+      (or* x (list* x)))         ; spanners w/ only 1 level, non-articulations 
     (let* ((x (unique* sy (member :fermata))))
       (or* x (list* x) (list* x (member :short :long :verylong))))
     (let* ((x (unique* sy (member :arpeggio))))
       (or* x (list* x) (list* x (member :up :down))))
     (let* ((x (member :portamento :glissando))) ; default is before
       (or* (unique* sy :glissbefore x) (list* (unique* sy :glissbefore x))
-	   (list* (unique* sy :glissbefore x) (member :before)) (list* (unique* sy :glissafter x) (member :after))))
+           (list* (unique* sy :glissbefore x) (member :before)) (list* (unique* sy :glissafter x) (member :after))))
     (let* ((x (member :breath)))
       (or* (unique* sy :breathafter x) (list* (unique* sy :breathafter x))
-	   (list* (unique* sy :breathbefore x) (member :before)) (list* (unique* sy :breathafter x) (member :after))))
+           (list* (unique* sy :breathbefore x) (member :before)) (list* (unique* sy :breathafter x) (member :after))))
     (let* ((x (member :tie)))
       (or* (unique* sy :tieafter x) (list* (unique* sy :tieafter x))
-	   (list* (unique* sy :tiebefore x) (member :before)) (list* (unique* sy :tieafter x) (member :after))))
+           (list* (unique* sy :tiebefore x) (member :before)) (list* (unique* sy :tieafter x) (member :after))))
     (let* ((x (member :harmonic)))
       (or* (cons* (unique* sy :harmtouched x)
-		  (or* (list* (type* +notesym-type+)) (list* (member :touched) (type* +notesym-type+)) (list* (type* +notesym-type+) (member :touched))))
-	   (cons* (unique* sy :harmsounding x)
-		  (or* (list* (member :sounding) (type* +notesym-type+)) (list* (type* +notesym-type+) (member :sounding))))))
+                  (or* (list* (type* +notesym-type+)) (list* (member :touched) (type* +notesym-type+)) (list* (type* +notesym-type+) (member :touched))))
+           (cons* (unique* sy :harmsounding x)
+                  (or* (list* (member :sounding) (type* +notesym-type+)) (list* (type* +notesym-type+) (member :sounding))))))
     (let* ((x (unique* sy (member :stopped :open :staccato :staccatissimo
-				  :righttoe :lefttoe :rightheel :leftheel
-				  :thumb :downbow :upbow :portato :tenuto :marcato :accent))))
+                                  :righttoe :lefttoe :rightheel :leftheel
+                                  :thumb :downbow :upbow :portato :tenuto :marcato :accent))))
       (or* x (list* x) (list* x integer))) ; articulations, dynamics, some spanners
     (let* ((x (unique* sy (member :longtrill :mordent :prall :trill))))
       (or* x (list* x) (list* x (type* +notesym-type+))))
@@ -709,17 +713,17 @@ instrument)"
     (let* ((x (unique* sy :staff (member :staff :startstaff-))))
       (cons* x (list-of* (integer 1))))
     (let* ((x (unique* sy (member :notehead))))
-      (list* x (member :harmonic :diamond :x :xcircle :triangle :slash)))	
+      (list* x (member :harmonic :diamond :x :xcircle :triangle :slash)))       
     (let* ((x (unique* sy (member :size))))
-      (list* x (member :small :tiny)))	
+      (list* x (member :small :tiny)))  
     (let* ((x (unique* sy :tremolo (member :tremolo :tremolofirst :tremolosecond))))
       (or* x (list* x) (list* x (rational (0))) (list* x (rational (0)) (member :notated)) (list* x (member :notated) (rational (0))))) ; tremolos
     (let* ((x (member :startslur-)))
       (or* (unique* si 1 x) (unique* si 1 (list* x))
-	   (cons* x (or* (list* (unique* si (integer 1)))
-			 (list* (unique* si 1 (member :dotted)))
-			 (list* (unique* si (integer 1)) (member :dotted))
-			 (list* (member :dotted) (unique* si (integer 1))))))) ; startslur-
+           (cons* x (or* (list* (unique* si (integer 1)))
+                         (list* (unique* si 1 (member :dotted)))
+                         (list* (unique* si (integer 1)) (member :dotted))
+                         (list* (member :dotted) (unique* si (integer 1))))))) ; startslur-
     (let* ((x (member :slur- :endslur-)))
       (or* (unique* si 1 x) (unique* si 1 (list* x)) (list* x (unique* si (integer 1)))))
     (let* ((x (member :custom :textnote :texttempo :textdyn :text :fingering :corda)))
@@ -728,16 +732,16 @@ instrument)"
       (or* (unique* tx 1 x) (unique* tx 1 (list* x)) (list* x (unique* tx (integer 1)))))
     (let* ((x (member :starttext-)))
       (cons* x (or* (unique* tx 1 (list* string))
-		    (unique* tx 1 (list* string (member :up :down :nopos :detached)))
-		    (unique* tx 1 (list* (member :up :down :nopos :detached) string))
-		    (list* string (unique* tx (integer 1)))
-		    (list* (unique* tx (integer 1)) string)
-		    (list* (member :up :down :nopos :detached) string (unique* tx (integer 1)))
-		    (list* (member :up :down :nopos :detached) (unique* tx (integer 1)) string)
-		    (list* string (member :up :down :nopos :detached) (unique* tx (integer 1)))
-		    (list* (unique* tx (integer 1)) (member :up :down :nopos :detached) string)
-		    (list* string (unique* tx (integer 1)) (member :up :down :nopos :detached))
-		    (list* (unique* tx (integer 1)) string (member :up :down :nopos :detached)))))))
+                    (unique* tx 1 (list* string (member :up :down :nopos :detached)))
+                    (unique* tx 1 (list* (member :up :down :nopos :detached) string))
+                    (list* string (unique* tx (integer 1)))
+                    (list* (unique* tx (integer 1)) string)
+                    (list* (member :up :down :nopos :detached) string (unique* tx (integer 1)))
+                    (list* (member :up :down :nopos :detached) (unique* tx (integer 1)) string)
+                    (list* string (member :up :down :nopos :detached) (unique* tx (integer 1)))
+                    (list* (unique* tx (integer 1)) (member :up :down :nopos :detached) string)
+                    (list* string (unique* tx (integer 1)) (member :up :down :nopos :detached))
+                    (list* (unique* tx (integer 1)) string (member :up :down :nopos :detached)))))))
 
 (declaim (type string *checktype-markerr* *checktype-markserr*))
 (defparameter *checktype-markerr* "Found ~S, expected valid/unique mark")
@@ -756,8 +760,8 @@ instrument)"
     (with-unique* (sy si tx)
       (list-of*
        (check* (or* (type* +notemark-type+)
-		    (cons* (member :mark) (cons* (or* (real 0) (list* real)) (and* list (type* +notemark-type+)))))
-	       *checktype-markerr* t)))
+                    (cons* (member :mark) (cons* (or* (real 0) (list* real)) (and* list (type* +notemark-type+)))))
+               *checktype-markerr* t)))
     *checktype-markserr* t))
 
 (defparameter +restmarks-type+
@@ -798,8 +802,8 @@ instrument)"
 
 ;; marks only at beginning or end of tied notes
 (declaim (type cons +marks-first-tie+ +marks-last-tie+ +marks-onoff+ +marks-before-after+ +marks-indiv-voices+
-	       +marks-spanner-voices+ +marks-spanner-staves+ +marks-expand+ +marks-defaultup+ +marks-withacc+ +marks-withaccdn+
-	       +marks-midistaff+ +marks-midistaffends+))
+               +marks-spanner-voices+ +marks-spanner-staves+ +marks-expand+ +marks-defaultup+ +marks-withacc+ +marks-withaccdn+
+               +marks-midistaff+ +marks-midistaffends+))
 (defparameter +marks-first-tie+
   '(:startslur- :startgraceslur- :start8up- :start8down- :starttext- :startwedge< :startwedge> :startwedge<* :startwedge>* :endgraceslur-
     :pppppp :ppppp :pppp :ppp :pp :p :mp :mf :f :ff :fff :ffff :fffff :ffffff :fp :sf :sff :sp :spp :sfz :rfz
