@@ -1,3 +1,14 @@
+## INTRODUCTION
+
+This repository is a fork from Orm Finnendahl's
+[fork](http://github.com/ormf/fomus) (sic!) of David Psenicka's
+[fomus](http://fomus.sourceforge.net).
+
+It includes some additions which deemed useful for my practice.
+
+
+## ORIGINAL README FROM ORM FINNENDAHL'S FORK
+
 ### OVERVIEW
 
 fomus is a software application for formatting musical output written
