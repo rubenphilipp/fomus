@@ -606,6 +606,8 @@
               (when *title* (format f "  title = ~S~%" *title*))
               (when *subtitle* (format f "  subtitle = ~S~%" *subtitle*))
               (when *composer* (format f "  composer = ~S~%" *composer*))
+              (format f "  tagline = ~S~%" (if *footer* *footer*
+                                               ""))
               (format f "}~%~%"))
             (format f "\\score {~%") ;; score block
             (loop for e in (force-list (or scorehead *lilypond-scorehead*)) do (format f "  ~A~%" e))

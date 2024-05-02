@@ -17,11 +17,14 @@
 (declaim (type boolean *acc-throughout-meas*))
 (defparameter *acc-throughout-meas* t)
 
-(declaim (type (or null string) *title* *subtitle* *composer*)
+(declaim (type (or null string) *title* *subtitle* *composer* *footer*)
          (type (or null symbol) *timesig-style* *tuplet-style*))
 (defparameter *title* nil)
 (defparameter *subtitle* nil)
 (defparameter *composer* nil)
+;;; footer, esp. for lilypond (as tagline)
+;;; RP  Thu May  2 23:19:49 2024
+(defparameter *footer* nil)
 (defparameter *timesig-style* nil) ; fractional style timesigs if nil or :fraction, use "C" symbol if :common
 (defparameter *tuplet-style* nil) ; denominator-only style if nil or :single, ratio style if :ratio
 
@@ -590,6 +593,7 @@ instrument)"
     (:ensemble-type (or* null symbol (cons* symbol (list-of* +instr-group-tree-type-aux+))) "NIL, SYMBOL or nested lists of SYMBOLS")
 
     (:title (or null string)) (:subtitle (or null string)) (:composer (or null string))
+    (:footer (or null string))
     (:timesig-style (member nil :fraction :common) "NIL, :FRACTION or :COMMON")
     (:tuplet-style (member nil :ratio :single) "NIL, :RATIO or :SINGLE")
 
