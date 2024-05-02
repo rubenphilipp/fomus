@@ -335,14 +335,12 @@
 
 (defun postproc-modes (pts)
   (declare (type list pts))
-  (loop
-    for p of-type partex in pts do
-      (rmprop (meas-timesig (first (part-meas p))) :mode)
-      (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p)
-            while m2
-            do (loop for bl = (popprop (meas-timesig m2) :mode)
-                     while bl
-                     do (addprop m1 bl)))))
+  (loop for p of-type partex in pts do
+        (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p)
+              while m2
+              do
+                 (loop for md = (popprop (meas-timesig m2) :mode)
+                       while md do (addprop m1 md)))))
 
 (defun postproc-marksonoff (pts)
   (declare (type list pts))

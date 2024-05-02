@@ -178,7 +178,6 @@
      >>"
     "unmeteredEnd =
      <<
-        \\bar \"|\"
         \\cadenzaOff
         \\undo \\omit Score.TimeSignature
         %%\\override Score.SpanBar.glyph-name = \"|\"
@@ -336,10 +335,7 @@
                           (loop
                            with cdi = :u
                            for (m . nxm) on (part-meas p) and mn from 1
-                           ;; TODO: 
-                           ;; find a better position for the timesig :mode
-                           ;; RP  Tue Apr 30 16:37:52 2024
-                           with ts-status = '(:mode :metered)
+                           with bar-status = '(:mode :metered)
                            for ts = (meas-timesig m) do
                            (when (getprop m :startkey)
                              (let ((x (lookup (second (getprop ts :keysig)) +lilypond-keysigs+)))
@@ -556,26 +552,28 @@
                                                 ((or (getmark e :end8down-) (getmark e :8down)) " \\octReset"))))))
                            (let ((b (getprop m :barline)))
                              (when b (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
-                           (format f "| %~A~%     ~A" mn (if nxm " " ""))
+                           ;;; add hidden bar to enable line break in unmetered mode
+                           ;;; RP  Thu May  2 15:20:53 2024
+                           (if (eq :unmetered (getf bar-status :mode))
+                               (format f "\\bar \"\" ~%")
+                               (format f "| %~A~%     ~A" mn (if nxm " " "")))
                            ;;; new :mode property
                            ;;; RP  Tue Apr 30 10:39:11 2024
-                           (let ((tsmode (second (getprop m :mode))))
-                             ;;; simple unmetered bars
-                             ;;; RP  Tue Apr 30 09:56:00 2024
-                             (format t "~%~a~%" ts-status)
+                           (let ((tsmode (second (getprop m :mode)))
+                                 (bl (getprop m :barline)))
+                           ;;; simple unmetered bars
+                           ;;; RP  Tue Apr 30 09:56:00 2024
                              (cond
-                               ((eq :unmetered tsmode)
-                                (when (not (eq :unmetered (getf ts-status :mode)))
-                                  ;;(format f "\\override \\once \\omit Score.BarLine \\bar \"|\" ")
-                                  (format f "\\unmeteredStart ")
-                                  ;; set status
-                                  (setf (getf ts-status :mode) :unmetered)))
-                               ((null tsmode) nil)
-                               (t
-                                (when (not (eq :metered (getf ts-status :mode)))
-                                  ;; reset
-                                  (format f "\\unmeteredEnd ")
-                                  (setf (getf ts-status :mode) :metered))))))
+                               ((and (eq (getf bar-status :mode) :metered) (eq :unmetered tsmode))
+                                (format f "\\unmeteredStart ")
+                                (setf (getf bar-status :mode) :unmetered))
+                               ((and (eq (getf bar-status :mode) :unmetered) (eq :metered tsmode))
+                                (format f "\\bar \"~a\"" (if (second bl)
+                                                             (lookup (second bl) +lilypond-barlines+)
+                                                             "|"))
+                                (format f "\\unmeteredEnd ")
+                                (setf (getf bar-status :mode) :metered))
+                               (t nil))))
                           (if (< vce (1- nvce)) (format f "} \\\\~%     ") (format f "}~%  >>~%")))
                     (format f "}~%~%")
                     (if (> ns 1) 
