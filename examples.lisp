@@ -1450,7 +1450,7 @@
          collect
          (fms:make-note
           :off i
-          :note (+ 60 (random 20))
+          :note (+ 30 (random 65))
           :marks `(,(if (integerp i)
                         `(:text ,(write-to-string i))
                         ':ignore))

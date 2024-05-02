@@ -50,6 +50,8 @@ the possibility to define "unmetered" time-signatures:
           :dur .5)))))
 ```
 
+<img width="1000" alt="fomus-expl" src="expl1.png">
+
 
 ## ORIGINAL README FROM ORM FINNENDAHL'S FORK
 
