@@ -343,7 +343,11 @@
                                            (loop for s from 1 to ns do
                                                  (format f "\\change Staff = ~A \\key ~A " (code-char (+ 64 s)) x))
                                            (format f "\\key ~A " x)))))
-                           (when (getprop m :startsig) (format f "\\time ~A/~A " (timesig-num ts) (timesig-den ts)))
+                           (when (or
+                                  (getf bar-status :force-ts-once)
+                                  (getprop m :startsig))
+                             (format f "\\time ~A/~A " (timesig-num ts) (timesig-den ts))
+                             (setf (getf bar-status :force-ts-once) nil))
                            (loop
                             for (pre e nxe) on (cons nil (or (nth vce (meas-voices m))
                                                              (list (make-restex nil :inv t :off (meas-off m) :dur (- (meas-endoff m) (meas-off m)) :marks '(:measrest)))))
@@ -566,12 +570,14 @@
                              (cond
                                ((and (eq (getf bar-status :mode) :metered) (eq :unmetered tsmode))
                                 (format f "\\unmeteredStart ")
+                                (setf (getf bar-status :force-ts-once) t)
                                 (setf (getf bar-status :mode) :unmetered))
                                ((and (eq (getf bar-status :mode) :unmetered) (eq :metered tsmode))
                                 (format f "\\bar \"~a\"" (if (second bl)
                                                              (lookup (second bl) +lilypond-barlines+)
                                                              "|"))
                                 (format f "\\unmeteredEnd ")
+                                (setf (getf bar-status :force-ts-once) t)
                                 (setf (getf bar-status :mode) :metered))
                                (t nil))))
                           (if (< vce (1- nvce)) (format f "} \\\\~%     ") (format f "}~%  >>~%")))
