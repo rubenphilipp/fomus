@@ -4,7 +4,51 @@ This repository is a fork from Orm Finnendahl's
 [fork](http://github.com/ormf/fomus) (sic!) of David Psenicka's
 [fomus](http://fomus.sourceforge.net).
 
-It includes some additions which deemed useful for my practice.
+It includes some additions which deemed useful for my practice, for example
+the possibility to define "unmetered" time-signatures:
+
+```
+(fms:fomus
+ :title "unmetered test"
+ :composer "Ruben Philipp"
+ :verbose 2
+ :output '((:lilypond
+            :view t))
+ :filename "/tmp/mode-test1"
+ :global (list
+          (fms:make-timesig :off 0 :time '(4 4)
+                            :props '((:barline :single)))
+          (fms:make-timesig :off 4 :time '(3 4)
+                            :props '((:mode :unmetered)
+                                     (:barline :double)
+                                     ))
+          (fms:make-timesig :off 16     ;;:time '(4 4)
+                            :props '((:mode :metered)
+                                     (:barline :double)))
+          (fms:make-timesig :off 20 :time '(4 4)
+                            :props '((:mode :unmetered)))
+          (fms:make-timesig :off 24 :props '((:mode :unmetered)))
+          (fms:make-timesig :off 48 :time '(3 4)
+                            :props '((:mode :metered))))
+ :ensemble-type :orchestra
+ :quartertones nil
+ :parts
+ (list
+  (fms:make-part
+   :name "Voice"
+   :instr :piano
+   :events
+   (loop for i from 0 to 100 by 1/2
+         for pos from 0
+         collect
+         (fms:make-note
+          :off i
+          :note (+ 60 (random 20))
+          :marks `(,(if (integerp i)
+                        `(:text ,(write-to-string i))
+                        ':ignore))
+          :dur .5)))))
+```
 
 
 ## ORIGINAL README FROM ORM FINNENDAHL'S FORK

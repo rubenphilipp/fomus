@@ -1412,7 +1412,7 @@
 ;;; RP  Thu May  2 15:55:16 2024
 
 (fms:fomus
- :title "sc-test 1"
+ :title "unmetered test"
  :composer "Ruben Philipp"
  :verbose 2
  :output '((:lilypond
@@ -1426,24 +1426,16 @@
                             :props '((:barline :single)))
           (fms:make-timesig :off 4 :time '(3 4)
                             :props '((:mode :unmetered)
-                                     ;;(:barline :double)
-                                     ))
+                                     (:barline :double)))
           (fms:make-timesig :off 16     ;;:time '(4 4)
-                            :props '(;;(:barline :single)
-                                     (:mode :metered)
-                                     (:barline :double)
-                                     ;; (:mode :metered)
-                                     ))
+                            :props '((:mode :metered)
+                                     (:barline :double)))
           (fms:make-timesig :off 20 :time '(4 4)
                             :props '(;;(:barline :single)
-                                     (:mode :unmetered)
-                                     ;;(:barline :double)
-                                     ;; (:mode :metered)
-                                     ))
+                                     (:mode :unmetered)))
           (fms:make-timesig :off 24 :props '((:mode :unmetered)))
           (fms:make-timesig :off 48 :time '(3 4)
                             :props '((:mode :metered))))
- ;;:lilypond-scorehead "\\tempo 4 = 120"
  :ensemble-type :orchestra
  :quartertones nil
  :parts
