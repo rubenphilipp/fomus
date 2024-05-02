@@ -11,6 +11,7 @@ the possibility to define "unmetered" time-signatures:
 (fms:fomus
  :title "unmetered test"
  :composer "Ruben Philipp"
+ :footer (format nil "exported: ~a" (write-to-string (get-universal-time)))
  :verbose 2
  :output '((:lilypond
             :view t))
