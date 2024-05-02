@@ -172,15 +172,16 @@
     ;;; RP  Tue Apr 30 09:55:41 2024
     "unmeteredStart = 
      <<
-        \\omit Score.BarLine 
-        \\override Score.TimeSignature.transparent = ##t 
-        \\override Score.SpanBar.glyph-name = \"\" 
+        \\cadenzaOn
+        \\omit Score.TimeSignature
+        %%\\override Score.SpanBar.glyph-name = \"\" 
      >>"
     "unmeteredEnd =
      <<
-        \\undo \\omit Score.BarLine
-        \\override Score.TimeSignature.transparent = ##f
-        \\override Score.SpanBar.glyph-name = \"|\"
+        \\bar \"|\"
+        \\cadenzaOff
+        \\undo \\omit Score.TimeSignature
+        %%\\override Score.SpanBar.glyph-name = \"|\"
      >>"
     ))
 
@@ -335,7 +336,7 @@
                           (loop
                            with cdi = :u
                            for (m . nxm) on (part-meas p) and mn from 1
-                           ;; TODO:
+                           ;; TODO: 
                            ;; find a better position for the timesig :mode
                            ;; RP  Tue Apr 30 16:37:52 2024
                            with ts-status = '(:mode :metered)
@@ -553,17 +554,19 @@
                                              (loop repeat (length uu) collect "}")))
                                           (cond ((or (getmark e :end8up-) (getmark e :8up)) " \\octReset")
                                                 ((or (getmark e :end8down-) (getmark e :8down)) " \\octReset"))))))
+                           (let ((b (getprop m :barline)))
+                             (when b (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
+                           (format f "| %~A~%     ~A" mn (if nxm " " ""))
                            ;;; new :mode property
-                           ;;; TODO: Does not work yes (seems as if mode is not
-                           ;;; available here).
                            ;;; RP  Tue Apr 30 10:39:11 2024
-                           (let ((tsmode (second (getprop ts :mode))))
+                           (let ((tsmode (second (getprop m :mode))))
                              ;;; simple unmetered bars
                              ;;; RP  Tue Apr 30 09:56:00 2024
+                             (format t "~%~a~%" ts-status)
                              (cond
                                ((eq :unmetered tsmode)
                                 (when (not (eq :unmetered (getf ts-status :mode)))
-                                  (format t "STUNM~%")
+                                  ;;(format f "\\override \\once \\omit Score.BarLine \\bar \"|\" ")
                                   (format f "\\unmeteredStart ")
                                   ;; set status
                                   (setf (getf ts-status :mode) :unmetered)))
@@ -571,12 +574,8 @@
                                (t
                                 (when (not (eq :metered (getf ts-status :mode)))
                                   ;; reset
-                                  (format t "NDUNM~%")
                                   (format f "\\unmeteredEnd ")
-                                  (setf (getf ts-status :mode) :metered)))))
-                           (let ((b (getprop m :barline)))
-                             (when b (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
-                           (format f "| %~A~%     ~A" mn (if nxm " " "")))
+                                  (setf (getf ts-status :mode) :metered))))))
                           (if (< vce (1- nvce)) (format f "} \\\\~%     ") (format f "}~%  >>~%")))
                     (format f "}~%~%")
                     (if (> ns 1) 
