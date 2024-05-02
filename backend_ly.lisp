@@ -168,19 +168,26 @@
     "beamLR = #(define-music-function (numl numr) (number? number?) #{\\set stemLeftBeamCount = #numl \\set stemRightBeamCount = #numr #})" 
     "textSpan = #(define-music-function (dir str) (number? string?) #{\\override TextSpanner.direction = #dir \\override TextSpanner.edge-text = #(cons str \"\") #})" 
     "noteHead = #(define-music-function (sty) (symbol?) #{\\once \\override NoteHead.style = #sty #})"
+    ;;; unmetered sign (the X)
+    ;;; RP  Thu May  2 22:55:58 2024
+    "unmeteredStencil =
+        #(make-path-stencil '(moveto -.5 -1.5
+                              rlineto 1. 3
+                              moveto .5 -1.5
+                              rlineto -1. 3)
+          0.18 1 1 #t #:line-cap-style 'butt)"
     ;;; simple meterless bars
     ;;; RP  Tue Apr 30 09:55:41 2024
     "unmeteredStart = 
      <<
         \\cadenzaOn
-        \\omit Score.TimeSignature
-        %%\\override Score.SpanBar.glyph-name = \"\" 
+        \\once \\override Score.TimeSignature.stencil = \\unmeteredStencil
+        %%\\omit Score.TimeSignature
      >>"
     "unmeteredEnd =
      <<
         \\cadenzaOff
         \\undo \\omit Score.TimeSignature
-        %%\\override Score.SpanBar.glyph-name = \"|\"
      >>"
     ))
 
