@@ -329,18 +329,6 @@
      (unless (getprop m :barline)
        (addprop m (list :barline :final)))) (print-dot)))
 
-;;; new function for modes
-;;; derived from postproc-barlines
-;;; RP  Wed May  1 21:53:14 2024
-
-(defun postproc-modes (pts)
-  (declare (type list pts))
-  (loop for p of-type partex in pts do
-        (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p)
-              while m2
-              do
-                 (loop for md = (popprop (meas-timesig m2) :mode)
-                       while md do (addprop m1 md)))))
 
 (defun postproc-marksonoff (pts)
   (declare (type list pts))
@@ -578,5 +566,4 @@
   (postproc-marksnodup pts)
   (postproc-text pts)
   (postproc-markaccs2 pts)
-  (postproc-barlines pts)
-  (postproc-modes pts))
+  (postproc-barlines pts))
