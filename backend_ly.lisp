@@ -343,27 +343,28 @@
                           (loop
                            with cdi = :u
                            for (m . nxm) on (part-meas p) and mn from 1
-                           with bar-status = '(:mode :metered)
+                           with unmetered? = nil
+                           with force-ts-once? = nil
                            for ts = (meas-timesig m) do
-                           (when (getprop m :startkey)
-                             (let ((x (lookup (second (getprop ts :keysig)) +lilypond-keysigs+)))
-                               (when x (if (> ns 1)
-                                           (loop for s from 1 to ns do
-                                                 (format f "\\change Staff = ~A \\key ~A " (code-char (+ 64 s)) x))
-                                           (format f "\\key ~A " x)))))
+                             (when (getprop m :startkey)
+                               (let ((x (lookup (second (getprop ts :keysig)) +lilypond-keysigs+)))
+                                 (when x (if (> ns 1)
+                                             (loop for s from 1 to ns do
+                                               (format f "\\change Staff = ~A \\key ~A " (code-char (+ 64 s)) x))
+                                             (format f "\\key ~A " x)))))
                            ;;; metered/unmetered mode
                            ;;; RP  Fri May  3 14:49:59 2024
                            (let ((tsmode (second (getprop ts :mode))))
                              ;;; unmetered sections need to be started here
-                             (when (and (eq (getf bar-status :mode) :metered) (eq :unmetered tsmode))
+                             (when (and (not unmetered?) (eq :unmetered tsmode))
                                (format f "\\unmeteredStart ")
-                               (setf (getf bar-status :force-ts-once) t)
-                               (setf (getf bar-status :mode) :unmetered)))
+                               (setf force-ts-once? t)
+                               (setf unmetered? t)))
                            (when (or
-                                  (getf bar-status :force-ts-once)
+                                  force-ts-once?
                                   (getprop m :startsig))
                              (format f "\\time ~A/~A " (timesig-num ts) (timesig-den ts))
-                             (setf (getf bar-status :force-ts-once) nil))
+                             (setf force-ts-once? nil))
                            (loop
                             for (pre e nxe) on (cons nil (or (nth vce (meas-voices m))
                                                              (list (make-restex nil :inv t :off (meas-off m) :dur (- (meas-endoff m) (meas-off m)) :marks '(:measrest)))))
@@ -570,22 +571,21 @@
                                              (loop repeat (length uu) collect "}")))
                                           (cond ((or (getmark e :end8up-) (getmark e :8up)) " \\octReset")
                                                 ((or (getmark e :end8down-) (getmark e :8down)) " \\octReset"))))))
-                           (getf bar-status :mode)
                            (let* ((next-measure (car nxm))
                                   (nx-mode (when next-measure
                                              (second (getprop (meas-timesig next-measure) :mode))))
                                   (b (getprop m :barline)))
                              ;;; unmetered sections need to be ended here
                              ;;; RP  Fri May  3 15:46:37 2024
-                             (when (and nx-mode (eq (getf bar-status :mode) :unmetered) (eq :metered nx-mode))
+                             (when (and nx-mode unmetered? (eq :metered nx-mode))
                                (format f "\\unmeteredEnd ")
                                (unless b
                                  (format f "\\bar \"|\" "))
-                               (setf (getf bar-status :force-ts-once) t)
-                               (setf (getf bar-status :mode) :metered))
+                               (setf force-ts-once? t)
+                               (setf unmetered? nil))
                              (when b
                                (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
-                           (if (eq :unmetered (getf bar-status :mode))
+                           (if unmetered?
                                (format f "\\bar \"\" ~%")
                                (format f "| %~A~%     ~A" mn (if nxm " " ""))))
                           (if (< vce (1- nvce)) (format f "} \\\\~%     ") (format f "}~%  >>~%")))
