@@ -53,6 +53,10 @@ the possibility to define "unmetered" time-signatures:
 
 <img width="1000" alt="fomus-expl" src="expl1.png">
 
+**Note:**
+MusicXML export seems to be broken as of May 2024 and needs to be fixed in the
+future.
+
 
 ## ORIGINAL README FROM ORM FINNENDAHL'S FORK
 
