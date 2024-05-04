@@ -570,17 +570,21 @@
                                              (loop repeat (length uu) collect "}")))
                                           (cond ((or (getmark e :end8up-) (getmark e :8up)) " \\octReset")
                                                 ((or (getmark e :end8down-) (getmark e :8down)) " \\octReset"))))))
+                           (getf bar-status :mode)
                            (let* ((next-measure (car nxm))
                                   (nx-mode (when next-measure
-                                             (second (getprop (meas-timesig next-measure) :mode)))))
+                                             (second (getprop (meas-timesig next-measure) :mode))))
+                                  (b (getprop m :barline)))
                              ;;; unmetered sections need to be ended here
                              ;;; RP  Fri May  3 15:46:37 2024
                              (when (and nx-mode (eq (getf bar-status :mode) :unmetered) (eq :metered nx-mode))
                                (format f "\\unmeteredEnd ")
+                               (unless b
+                                 (format f "\\bar \"|\" "))
                                (setf (getf bar-status :force-ts-once) t)
-                               (setf (getf bar-status :mode) :metered)))
-                           (let ((b (getprop m :barline)))
-                             (when b (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
+                               (setf (getf bar-status :mode) :metered))
+                             (when b
+                               (format f "\\bar \"~A\" " (lookup (second b) +lilypond-barlines+))))
                            (if (eq :unmetered (getf bar-status :mode))
                                (format f "\\bar \"\" ~%")
                                (format f "| %~A~%     ~A" mn (if nxm " " ""))))
